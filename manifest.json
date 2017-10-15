@@ -1,0 +1,13 @@
+{
+  "name": "No bs",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Create and view annotations.",
+  "icons": { "128": "icon_128.png" },
+  "permissions": ["*"],
+  "browser_action": {
+    "default_title": "",
+    "default_icon": "icon_128.png",
+    "default_popup": "./public/index.html"
+  }
+}

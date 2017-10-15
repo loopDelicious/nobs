@@ -1,0 +1,24 @@
+{
+  "name": "nobs-chrome-extension",
+  "version": "1.0.0",
+  "manifest_version": 2,
+  "description": "Create and view annotations.",
+  "icons": { "128": "icon_128.png" },
+  "permissions": ["*"],
+  "main": "index.js",
+  "author": "Joyce Lin",
+  "license": "MIT",
+  "dependencies": {
+    "babel-core": "^6.22.1",
+    "babel-loader": "^6.2.10",
+    "babel-plugin-transform-class-properties": "^6.22.0",
+    "babel-preset-es2015": "^6.22.0",
+    "babel-preset-react": "^6.22.0",
+    "css-loader": "^0.26.1",
+    "jquery": "^3.1.1",
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2",
+    "react-select": "^1.0.0-rc.3",
+    "style-loader": "^0.13.1"
+  }
+}
