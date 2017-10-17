@@ -4,7 +4,7 @@
   "manifest_version": 2,
   "description": "Create and view annotations.",
   "icons": { "128": "icon_128.png" },
-  "permissions": ["*"],
+  "permissions": ["tabs", "<all_urls>"],
   "browser_action": {
     "default_title": "",
     "default_icon": "icon_128.png",

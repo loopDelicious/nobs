@@ -6,7 +6,14 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <p>hello world!</p>
+          <div className="current-page">
+              <div id="message"></div>
+          </div>
+          <div className="voting">
+              <p>Is this website truthy or falsey?</p>
+              <i className="fa fa-tachometer fa-5x" />
+          </div>
+
       </div>
     );
   }

@@ -19,11 +19,6 @@ body {
   font-family: var(--main-font);
 }
 
-#root {
-  height: 400px;
-  width: 400px;
-}
-
 .App {
   height: 400px;
   width: 400px;
