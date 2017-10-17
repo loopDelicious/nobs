@@ -8,6 +8,7 @@
   "browser_action": {
     "default_title": "",
     "default_icon": "icon_128.png",
-    "default_popup": "./public/index.html"
+    "default_popup": "./public/index.html",
+    "popup": "./public/index.html"
   }
 }
