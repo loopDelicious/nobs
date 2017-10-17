@@ -83,7 +83,8 @@
 	        }
 
 	        return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = App.__proto__ || Object.getPrototypeOf(App)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
-	            currentUrl: null
+	            currentUrl: null,
+	            vote: null
 	        }, _this.componentDidMount = function () {
 	            chrome.tabs.query({
 	                'active': true,
@@ -94,6 +95,17 @@
 	                    currentUrl: url
 	                });
 	            });
+	        }, _this.handleUpvote = function () {
+	            _this.setState({
+	                vote: 1
+	            }, console.log('upvoted'));
+	            // TODO: replace callback with call to server to log vote
+	            // TODO: display calculated % of truthy on this page
+	            // TODO: if none, encourage votes
+	        }, _this.handleDownvote = function () {
+	            _this.setState({
+	                vote: 0
+	            }, console.log('downvoted'));
 	        }, _temp), _possibleConstructorReturn(_this, _ret);
 	    }
 
@@ -105,26 +117,30 @@
 	                { className: 'App' },
 	                _react2.default.createElement(
 	                    'div',
-	                    { className: 'current-page' },
-	                    _react2.default.createElement(
-	                        'div',
-	                        { id: 'message' },
-	                        _react2.default.createElement(
-	                            'p',
-	                            null,
-	                            this.state.currentUrl
-	                        )
-	                    )
-	                ),
-	                _react2.default.createElement(
-	                    'div',
 	                    { className: 'voting' },
 	                    _react2.default.createElement(
-	                        'p',
+	                        'h2',
 	                        null,
-	                        'Is this website truthy or falsey?'
+	                        'Is this page truthy or falsey?'
 	                    ),
-	                    _react2.default.createElement('i', { className: 'fa fa-tachometer fa-5x' })
+	                    _react2.default.createElement(
+	                        'p',
+	                        { className: 'urlName' },
+	                        this.state.currentUrl
+	                    ),
+	                    _react2.default.createElement('i', { className: 'fa fa-tachometer fa-5x' }),
+	                    _react2.default.createElement('br', null),
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'voteArrows', onClick: this.handleUpvote.bind(this) },
+	                        '\u25B2'
+	                    ),
+	                    _react2.default.createElement('br', null),
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'voteArrows', onClick: this.handleDownvote.bind(this) },
+	                        '\u25BC'
+	                    )
 	                )
 	            );
 	        }

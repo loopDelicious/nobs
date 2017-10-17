@@ -1,27 +1,32 @@
-:root{
-  --main-color: #dce775;
-  --secondary-color: #f57c00;
-  --tertiary-color: #afb42b;
-  --contrast: #e65100;
-  --pop: #cddc39;
-  --light-text: #FFFFFF;
-  --text:#cfd8dc;
+:root {
+    --main-color: #dce775;
+    --secondary-color: #f57c00;
+    --tertiary-color: #afb42b;
+    --contrast: #e65100;
+    --pop: #cddc39;
+    --light-text: #FFFFFF;
+    --text: #cfd8dc;
 
-  /* typography */
+    /* typography */
 
-  --main-font: "Encode Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --main-font: "Encode Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 
 }
 
 body {
-  margin: 0;
-  padding: 0;
-  font-family: var(--main-font);
+    margin: 0;
+    padding: 0;
+    font-family: var(--main-font);
 }
 
 .App {
-  height: 400px;
-  width: 400px;
+    height: 400px;
+    width: 400px;
+    padding: 14px;
+}
+
+.voteArrows {
+    cursor: pointer;
 }
 
 
