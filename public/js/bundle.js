@@ -72,9 +72,29 @@
 	    _inherits(App, _Component);
 
 	    function App() {
+	        var _ref;
+
+	        var _temp, _this, _ret;
+
 	        _classCallCheck(this, App);
 
-	        return _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).apply(this, arguments));
+	        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	            args[_key] = arguments[_key];
+	        }
+
+	        return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = App.__proto__ || Object.getPrototypeOf(App)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+	            currentUrl: null
+	        }, _this.componentDidMount = function () {
+	            chrome.tabs.query({
+	                'active': true,
+	                'lastFocusedWindow': true
+	            }, function (tabs) {
+	                var url = tabs[0].url;
+	                _this.setState({
+	                    currentUrl: url
+	                });
+	            });
+	        }, _temp), _possibleConstructorReturn(_this, _ret);
 	    }
 
 	    _createClass(App, [{
@@ -86,7 +106,15 @@
 	                _react2.default.createElement(
 	                    'div',
 	                    { className: 'current-page' },
-	                    _react2.default.createElement('div', { id: 'message' })
+	                    _react2.default.createElement(
+	                        'div',
+	                        { id: 'message' },
+	                        _react2.default.createElement(
+	                            'p',
+	                            null,
+	                            this.state.currentUrl
+	                        )
+	                    )
 	                ),
 	                _react2.default.createElement(
 	                    'div',
