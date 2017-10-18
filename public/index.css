@@ -1,11 +1,11 @@
 :root {
-    --main-color: #dce775;
-    --secondary-color: #f57c00;
-    --tertiary-color: #afb42b;
-    --contrast: #e65100;
+    --main-color: #8AC6D0;
+    --secondary-color: #63768D;
+    --tertiary-color: #554971;
+    --dark: #36213E;
     --pop: #cddc39;
     --light-text: #FFFFFF;
-    --text: #cfd8dc;
+    --text: #B8F3FF;
 
     /* typography */
 
@@ -20,9 +20,35 @@ body {
 }
 
 .App {
-    height: 400px;
+    height: 200px;
     width: 400px;
-    padding: 14px;
+    padding: 22px;
+}
+
+button {
+    border-radius: 4px;
+    padding: 10px;
+}
+
+.intro {
+    height: 100px;
+    color: var(--dark);
+}
+
+.intro-icon {
+   float: left;
+}
+
+.intro-copy {
+    float: right;
+    overflow: hidden;
+}
+
+.voting {
+    width: 100%;
+    height: 100px;
+    background-color: var(--dark);
+    color: var(--main-color);
 }
 
 .voteArrows {

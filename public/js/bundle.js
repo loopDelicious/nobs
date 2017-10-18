@@ -117,29 +117,40 @@
 	                { className: 'App' },
 	                _react2.default.createElement(
 	                    'div',
+	                    { className: 'intro' },
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'intro-icon' },
+	                        _react2.default.createElement('i', { className: 'fa fa-tachometer fa-5x' })
+	                    ),
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'intro-copy' },
+	                        _react2.default.createElement(
+	                            'h2',
+	                            null,
+	                            'Is this page truthy or falsey?'
+	                        ),
+	                        _react2.default.createElement(
+	                            'p',
+	                            { className: 'urlName' },
+	                            this.state.currentUrl
+	                        )
+	                    )
+	                ),
+	                _react2.default.createElement(
+	                    'div',
 	                    { className: 'voting' },
 	                    _react2.default.createElement(
-	                        'h2',
-	                        null,
-	                        'Is this page truthy or falsey?'
-	                    ),
-	                    _react2.default.createElement(
-	                        'p',
-	                        { className: 'urlName' },
-	                        this.state.currentUrl
-	                    ),
-	                    _react2.default.createElement('i', { className: 'fa fa-tachometer fa-5x' }),
-	                    _react2.default.createElement('br', null),
-	                    _react2.default.createElement(
-	                        'div',
+	                        'button',
 	                        { className: 'voteArrows', onClick: this.handleUpvote.bind(this) },
-	                        '\u25B2'
+	                        'Truthy \u25B2'
 	                    ),
 	                    _react2.default.createElement('br', null),
 	                    _react2.default.createElement(
-	                        'div',
+	                        'button',
 	                        { className: 'voteArrows', onClick: this.handleDownvote.bind(this) },
-	                        '\u25BC'
+	                        'Falsey \u25BC'
 	                    )
 	                )
 	            );

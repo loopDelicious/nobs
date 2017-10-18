@@ -39,13 +39,18 @@ class App extends Component {
     render() {
         return (
             <div className="App">
-
+                <div className="intro">
+                    <div className="intro-icon">
+                        <i className="fa fa-tachometer fa-5x"/>
+                    </div>
+                    <div className="intro-copy">
+                        <h2>Is this page truthy or falsey?</h2>
+                        <p className="urlName">{this.state.currentUrl}</p>
+                    </div>
+                </div>
                 <div className="voting">
-                    <h2>Is this page truthy or falsey?</h2>
-                    <p className="urlName">{this.state.currentUrl}</p>
-                    <i className="fa fa-tachometer fa-5x"/><br />
-                    <div className="voteArrows" onClick={this.handleUpvote.bind(this)}>&#x25B2;</div><br />
-                    <div className="voteArrows" onClick={this.handleDownvote.bind(this)}>&#x25BC;</div>
+                    <button className="voteArrows" onClick={this.handleUpvote.bind(this)}>Truthy &#x25B2;</button><br />
+                    <button className="voteArrows" onClick={this.handleDownvote.bind(this)}>Falsey &#x25BC;</button>
                 </div>
 
             </div>
