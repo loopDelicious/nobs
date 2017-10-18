@@ -27,12 +27,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 db.tx(function () {
     return this.batch([
         this.none("CREATE TABLE IF NOT EXISTS pages (id SERIAL PRIMARY KEY, rootAndPath TEXT)"),
-        this.none("CREATE TABLE IF NOT EXISTS votes (id SERIAL PRIMARY KEY, ipAddress VARCHAR(40) not null, vote NUMBER)")
+        this.none("CREATE TABLE IF NOT EXISTS votes (id SERIAL PRIMARY KEY, ipAddress VARCHAR(40) not null, vote BOOLEAN)")
     ]);
 })
     .then(function () {
-        // console.log('created PAGES');
-        // console.log('created VOTES');
+        console.log('created PAGES');
+        console.log('created VOTES');
     })
     .catch(function (error) {
         console.log(error);
