@@ -12,7 +12,7 @@ const db = pg(connectionString);
 const app = express();
 
 // allow CORS access
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
@@ -21,13 +21,21 @@ app.use(function(req, res, next) {
 });
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({extended: false}));
 
 // create POSTGRES tables if none exists
 db.tx(function () {
     return this.batch([
-        this.none("CREATE TABLE IF NOT EXISTS pages (page_id SERIAL PRIMARY KEY, url TEXT UNIQUE)"),
-        this.none("CREATE TABLE IF NOT EXISTS votes (ip_address INET not null PRIMARY KEY, page_id BIGINT not null REFERENCES pages ON DELETE CASCADE, vote BOOLEAN)")
+        this.none(`CREATE TABLE IF NOT EXISTS pages (
+            page_id SERIAL PRIMARY KEY, 
+            url TEXT UNIQUE
+        )`),
+        this.none(`CREATE TABLE IF NOT EXISTS votes (
+            ip_address INET not null PRIMARY KEY, 
+            page_id BIGINT not null REFERENCES pages ON DELETE CASCADE, 
+            vote BOOLEAN,
+            UNIQUE (ip_address, page_id)
+        )`)
     ]);
 })
     .then(function () {
@@ -43,10 +51,23 @@ app.get('/votes', function (req, res) {
 
     let page = req.query.url;
 
-    db.one("SELECT count(*) FROM pages LEFT JOIN votes ON votes.page_id = pages.page_id WHERE url = '$1' GROUP BY vote;", page)
-        .then(function (data) {
-            console.log('DATA:', data.value);
-            res.send('success');
+    console.log(page, typeof(page));
+
+    db.any(`SELECT vote, count(*)::INT FROM pages 
+        LEFT JOIN votes ON votes.page_id = pages.page_id 
+        WHERE url = $1 
+        GROUP BY vote;`, page)
+        .then(function (countRetrieved) {
+            console.log('DATA:', countRetrieved);
+            let trueCount = countRetrieved[0].vote === true ? countRetrieved[0].count : countRetrieved[1].count;
+            let falseCount = countRetrieved[0].vote === false ? countRetrieved[0].count : countRetrieved[1].count;
+            res.send({
+                success: true,
+                data: countRetrieved,
+                trues: trueCount,
+                falses: falseCount,
+                score: trueCount / (trueCount + falseCount)
+            });
         })
         .catch(function (error) {
             console.log('ERROR:', error);
@@ -54,7 +75,8 @@ app.get('/votes', function (req, res) {
                 error: 'None shall pass - No votes counted',
                 message: error
             });
-        })
+        });
+    // TODO: handle when there's no votes
 });
 
 // POST to enter vote info into nobs db
@@ -64,24 +86,23 @@ app.post('/votes', function (req, res) {
     let vote = req.query.vote;
     let ip = req.query.ip;
 
-    console.log(page, vote, ip);
-
-    db.one("INSERT INTO pages (url) VALUES ($1) ON CONFLICT (url) DO UPDATE SET url=EXCLUDED.url RETURNING page_id;", page)
+    db.one(`INSERT INTO pages (url) 
+        VALUES ($1) 
+        ON CONFLICT (url) DO UPDATE SET url=EXCLUDED.url 
+        RETURNING page_id;`, page)
         .then(function (pageResult) {
             console.log('PAGE DATA:', pageResult);
-            res.send({
-                success: true,
-                data: pageResult
-            });
-            console.log(pageResult.page_id);
-            console.log(typeof(pageResult.page_id));
-            db.one("INSERT INTO votes (ip_address, page_id, vote) VALUES ($1, $2, $3) RETURNING ip_address;", [ip, 16, vote])
+            db.one(`INSERT INTO votes (ip_address, page_id, vote) 
+                VALUES ($1, $2, $3) 
+                ON CONFLICT (ip_address, page_id) DO UPDATE SET vote=$3 
+                RETURNING ip_address;`, [ip, pageResult.page_id, vote])
                 .then(function (voteResult) {
                     console.log('DATA:', voteResult);
                     res.send({
                         success: true,
                         data: voteResult
-                    });                })
+                    });
+                })
                 .catch(function (error) {
                     console.log('ERROR:', error);
                     res.status(400).send({
