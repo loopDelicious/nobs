@@ -56,17 +56,20 @@ app.get('/votes', function (req, res) {
     db.any(`SELECT vote, count(*)::INT FROM pages 
         LEFT JOIN votes ON votes.page_id = pages.page_id 
         WHERE url = $1 
-        GROUP BY vote;`, page)
+        GROUP BY vote
+        ORDER BY vote ASC;`, page)
         .then(function (countRetrieved) {
             console.log('DATA:', countRetrieved);
-            let trueCount = countRetrieved[0].vote === true ? countRetrieved[0].count : countRetrieved[1].count;
-            let falseCount = countRetrieved[0].vote === false ? countRetrieved[0].count : countRetrieved[1].count;
+            // first record of votes will be false
+            let trueCount = countRetrieved[1] ? countRetrieved[1].count : 0;
+            let falseCount = countRetrieved[0] ? countRetrieved[0].count : 0;
+            let allCount = trueCount + falseCount;
             res.send({
                 success: true,
                 data: countRetrieved,
                 trues: trueCount,
                 falses: falseCount,
-                score: trueCount / (trueCount + falseCount)
+                score: allCount ? trueCount / allCount : 0
             });
         })
         .catch(function (error) {
@@ -76,7 +79,6 @@ app.get('/votes', function (req, res) {
                 message: error
             });
         });
-    // TODO: handle when there's no votes
 });
 
 // POST to enter vote info into nobs db
