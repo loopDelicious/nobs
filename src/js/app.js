@@ -5,6 +5,7 @@ class App extends Component {
 
     state = {
         currentUrl: null,
+        voteHistory: null,
         vote: null
     };
 
@@ -22,51 +23,67 @@ class App extends Component {
             // retrieve vote history from server
             fetch('http://localhost:4800/votes?url=' + url).then((response) => {
                 return response.json();
-            }).then( (obj) => {
+            }).then((obj) => {
                 this.setState({
-                    vote: (obj.score * 100).toFixed(2)
+                    voteHistory: (obj.score ? (obj.score * 100).toFixed(2) : null)
                 });
             })
         });
     };
 
-    handleUpvote = () => {
-        this.setState({
-            vote: 1
-        }, console.log('upvoted'));
-        // TODO: replace callback with call to server to log vote
-        // TODO: if no votes yet, encourage votes
-        // TODO: handle diff URLs for same page, root domain instead of full root and path
+    handleVote = (vote) => {
 
+        this.setState({ vote });
+
+        fetch('http://localhost:4800/votes', {
+            method: 'post',
+            headers: new Headers({
+                'Content-Type': 'application/json'
+            }),
+            body: JSON.stringify({
+                url: this.state.currentUrl,
+                vote: vote
+            })
+        }).then((response) => {
+            return response.json();
+        }).then((obj) => {
+            console.log(obj);
+        });
     };
 
-    handleDownvote = () => {
-        this.setState({
-            vote: 0
-        }, console.log('downvoted'));
-    };
+    // TODO: handle diff URLs for same page, root domain instead of full root and path, canonical tags
+    // TODO: index on url lookup
+    // TODO: input validation, no sql injection
 
     render() {
         return (
             <div className="App">
                 <div className="intro">
                     <div className="intro-icon">
-                        <i className="fa fa-tachometer fa-5x"/>
-                    </div>
-                    <div className="intro-copy">
-                        <h2>Is this page truthy or falsey?</h2>
-                        <p className="urlName">{this.state.currentUrl}</p>
-                        <p>Truthiness: {this.state.vote}%</p>
+                        <div className="intro-icon">
+                            <i className="fa fa-tachometer fa-5x"/>
+                        </div>
+                        <div className="intro-copy">
+                            <h2>Is this page truthy or falsey?</h2>
+                            <p className="urlName">{this.state.currentUrl}</p>
+                            { this.state.voteHistory ?
+                                <p>Truthiness: {this.state.voteHistory}%</p>
+                                :
+                                <p>This site doesn't have enough reports yet. Be one of the first!</p>
+                            }
+                        </div>
                     </div>
                 </div>
                 <div className="voting">
-                    <button className="voteArrows" onClick={this.handleUpvote.bind(this)}>Truthy &#x25B2;</button><br />
-                    <button className="voteArrows" onClick={this.handleDownvote.bind(this)}>Falsey &#x25BC;</button>
+                    <button className="voteArrows" onClick={this.handleVote.bind(this, true)}>
+                        Truthy &#x25B2;</button>
+                    <br />
+                    <button className="voteArrows" onClick={this.handleVote.bind(this, false)}>
+                        Falsey &#x25BC;</button>
                 </div>
-
             </div>
         );
-    }
+    };
 
 }
 

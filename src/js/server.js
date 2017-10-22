@@ -31,7 +31,7 @@ db.tx(function () {
             url TEXT UNIQUE
         )`),
         this.none(`CREATE TABLE IF NOT EXISTS votes (
-            ip_address INET not null PRIMARY KEY, 
+            ip_address INET not null, 
             page_id BIGINT not null REFERENCES pages ON DELETE CASCADE, 
             vote BOOLEAN,
             UNIQUE (ip_address, page_id)
@@ -51,8 +51,6 @@ app.get('/votes', function (req, res) {
 
     let page = req.query.url;
 
-    console.log(page, typeof(page));
-
     db.any(`SELECT vote, count(*)::INT FROM pages 
         LEFT JOIN votes ON votes.page_id = pages.page_id 
         WHERE url = $1 
@@ -69,7 +67,7 @@ app.get('/votes', function (req, res) {
                 data: countRetrieved,
                 trues: trueCount,
                 falses: falseCount,
-                score: allCount ? trueCount / allCount : 0
+                score: allCount ? trueCount / allCount : null
             });
         })
         .catch(function (error) {
@@ -84,9 +82,13 @@ app.get('/votes', function (req, res) {
 // POST to enter vote info into nobs db
 app.post('/votes', function (req, res) {
 
-    let page = req.query.url;
-    let vote = req.query.vote;
-    let ip = req.query.ip;
+    console.log(req.body);
+    let page = req.body.url;
+    let vote = req.body.vote;
+    // let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    let ip = req.ip;
+
+    console.log(page, vote, ip);
 
     db.one(`INSERT INTO pages (url) 
         VALUES ($1) 

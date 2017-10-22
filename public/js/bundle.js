@@ -84,6 +84,7 @@
 
 	        return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = App.__proto__ || Object.getPrototypeOf(App)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
 	            currentUrl: null,
+	            voteHistory: null,
 	            vote: null
 	        }, _this.componentDidMount = function () {
 
@@ -101,26 +102,39 @@
 	                    return response.json();
 	                }).then(function (obj) {
 	                    _this.setState({
-	                        vote: (obj.score * 100).toFixed(2)
+	                        voteHistory: obj.score ? (obj.score * 100).toFixed(2) : null
 	                    });
 	                });
 	            });
-	        }, _this.handleUpvote = function () {
-	            _this.setState({
-	                vote: 1
-	            }, console.log('upvoted'));
-	            // TODO: replace callback with call to server to log vote
-	            // TODO: if no votes yet, encourage votes
-	            // TODO: handle diff URLs for same page, root domain instead of full root and path
-	        }, _this.handleDownvote = function () {
-	            _this.setState({
-	                vote: 0
-	            }, console.log('downvoted'));
+	        }, _this.handleVote = function (vote) {
+
+	            _this.setState({ vote: vote });
+
+	            fetch('http://localhost:4800/votes', {
+	                method: 'post',
+	                headers: new Headers({
+	                    'Content-Type': 'application/json'
+	                }),
+	                body: JSON.stringify({
+	                    url: _this.state.currentUrl,
+	                    vote: vote
+	                })
+	            }).then(function (response) {
+	                return response.json();
+	            }).then(function (obj) {
+	                console.log(obj);
+	            });
 	        }, _temp), _possibleConstructorReturn(_this, _ret);
 	    }
 
 	    _createClass(App, [{
 	        key: 'render',
+
+
+	        // TODO: handle diff URLs for same page, root domain instead of full root and path, canonical tags
+	        // TODO: index on url lookup
+	        // TODO: input validation, no sql injection
+
 	        value: function render() {
 	            return _react2.default.createElement(
 	                'div',
@@ -131,27 +145,35 @@
 	                    _react2.default.createElement(
 	                        'div',
 	                        { className: 'intro-icon' },
-	                        _react2.default.createElement('i', { className: 'fa fa-tachometer fa-5x' })
-	                    ),
-	                    _react2.default.createElement(
-	                        'div',
-	                        { className: 'intro-copy' },
 	                        _react2.default.createElement(
-	                            'h2',
-	                            null,
-	                            'Is this page truthy or falsey?'
+	                            'div',
+	                            { className: 'intro-icon' },
+	                            _react2.default.createElement('i', { className: 'fa fa-tachometer fa-5x' })
 	                        ),
 	                        _react2.default.createElement(
-	                            'p',
-	                            { className: 'urlName' },
-	                            this.state.currentUrl
-	                        ),
-	                        _react2.default.createElement(
-	                            'p',
-	                            null,
-	                            'Truthiness: ',
-	                            this.state.vote,
-	                            '%'
+	                            'div',
+	                            { className: 'intro-copy' },
+	                            _react2.default.createElement(
+	                                'h2',
+	                                null,
+	                                'Is this page truthy or falsey?'
+	                            ),
+	                            _react2.default.createElement(
+	                                'p',
+	                                { className: 'urlName' },
+	                                this.state.currentUrl
+	                            ),
+	                            this.state.voteHistory ? _react2.default.createElement(
+	                                'p',
+	                                null,
+	                                'Truthiness: ',
+	                                this.state.voteHistory,
+	                                '%'
+	                            ) : _react2.default.createElement(
+	                                'p',
+	                                null,
+	                                'This site doesn\'t have enough reports yet. Be one of the first!'
+	                            )
 	                        )
 	                    )
 	                ),
@@ -160,13 +182,13 @@
 	                    { className: 'voting' },
 	                    _react2.default.createElement(
 	                        'button',
-	                        { className: 'voteArrows', onClick: this.handleUpvote.bind(this) },
+	                        { className: 'voteArrows', onClick: this.handleVote.bind(this, true) },
 	                        'Truthy \u25B2'
 	                    ),
 	                    _react2.default.createElement('br', null),
 	                    _react2.default.createElement(
 	                        'button',
-	                        { className: 'voteArrows', onClick: this.handleDownvote.bind(this) },
+	                        { className: 'voteArrows', onClick: this.handleVote.bind(this, false) },
 	                        'Falsey \u25BC'
 	                    )
 	                )
