@@ -86,6 +86,8 @@
 	            currentUrl: null,
 	            vote: null
 	        }, _this.componentDidMount = function () {
+
+	            //identify current page
 	            chrome.tabs.query({
 	                'active': true,
 	                'lastFocusedWindow': true
@@ -94,14 +96,22 @@
 	                _this.setState({
 	                    currentUrl: url
 	                });
+	                // retrieve vote history from server
+	                fetch('http://localhost:4800/votes?url=' + url).then(function (response) {
+	                    return response.json();
+	                }).then(function (obj) {
+	                    _this.setState({
+	                        vote: (obj.score * 100).toFixed(2)
+	                    });
+	                });
 	            });
 	        }, _this.handleUpvote = function () {
 	            _this.setState({
 	                vote: 1
 	            }, console.log('upvoted'));
 	            // TODO: replace callback with call to server to log vote
-	            // TODO: display calculated % of truthy on this page
-	            // TODO: if none, encourage votes
+	            // TODO: if no votes yet, encourage votes
+	            // TODO: handle diff URLs for same page, root domain instead of full root and path
 	        }, _this.handleDownvote = function () {
 	            _this.setState({
 	                vote: 0
@@ -135,6 +145,13 @@
 	                            'p',
 	                            { className: 'urlName' },
 	                            this.state.currentUrl
+	                        ),
+	                        _react2.default.createElement(
+	                            'p',
+	                            null,
+	                            'Truthiness: ',
+	                            this.state.vote,
+	                            '%'
 	                        )
 	                    )
 	                ),

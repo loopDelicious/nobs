@@ -9,6 +9,8 @@ class App extends Component {
     };
 
     componentDidMount = () => {
+
+        //identify current page
         chrome.tabs.query({
             'active': true,
             'lastFocusedWindow': true
@@ -17,6 +19,14 @@ class App extends Component {
             this.setState({
                 currentUrl: url
             });
+            // retrieve vote history from server
+            fetch('http://localhost:4800/votes?url=' + url).then((response) => {
+                return response.json();
+            }).then( (obj) => {
+                this.setState({
+                    vote: (obj.score * 100).toFixed(2)
+                });
+            })
         });
     };
 
@@ -25,8 +35,8 @@ class App extends Component {
             vote: 1
         }, console.log('upvoted'));
         // TODO: replace callback with call to server to log vote
-        // TODO: display calculated % of truthy on this page
-        // TODO: if none, encourage votes
+        // TODO: if no votes yet, encourage votes
+        // TODO: handle diff URLs for same page, root domain instead of full root and path
 
     };
 
@@ -46,6 +56,7 @@ class App extends Component {
                     <div className="intro-copy">
                         <h2>Is this page truthy or falsey?</h2>
                         <p className="urlName">{this.state.currentUrl}</p>
+                        <p>Truthiness: {this.state.vote}%</p>
                     </div>
                 </div>
                 <div className="voting">

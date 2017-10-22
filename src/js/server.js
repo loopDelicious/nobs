@@ -61,8 +61,8 @@ app.get('/votes', function (req, res) {
         .then(function (countRetrieved) {
             console.log('DATA:', countRetrieved);
             // first record of votes will be false
-            let trueCount = countRetrieved[1] ? countRetrieved[1].count : 0;
-            let falseCount = countRetrieved[0] ? countRetrieved[0].count : 0;
+            let trueCount = countRetrieved[0] ? countRetrieved[0].count : 0;
+            let falseCount = countRetrieved[1] ? countRetrieved[1].count : 0;
             let allCount = trueCount + falseCount;
             res.send({
                 success: true,
