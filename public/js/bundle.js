@@ -98,8 +98,10 @@
 	                'active': true,
 	                'lastFocusedWindow': true
 	            }, function (tabs) {
+
 	                var url = tabs[0].url;
 	                url = url.includes("?") ? url.split("?")[0] : url;
+
 	                if (isURL(url)) {
 	                    _this.setState({
 	                        currentUrl: url
@@ -140,7 +142,7 @@
 	        key: 'render',
 
 
-	        // TODO: input validation (for all parameters submitted to server to be entered in db: not undefined, boolean)
+	        // TODO: input validation (for all parameters submitted to server to be entered in db: not undefined on client and server sides)
 	        // TODO: rate limiting with Redis cache key is ip, TTL is value
 	        // TODO: clean up UI: display vote in pop-up, or add a dynamic meter as a visual indicator
 

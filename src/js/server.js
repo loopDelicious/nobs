@@ -9,7 +9,7 @@ const pg = require("pg-promise")(options);
 const connectionString = "postgres://localhost:5432/nobs_db";
 const db = pg(connectionString);
 
-const {isURL} = require('validator');
+const {isURL, isBoolean} = require('validator');
 
 const app = express();
 
@@ -109,14 +109,23 @@ app.post('/vote', function (req, res) {
     let ip = req.ip;
 
     // discard query string
-    page = (page.includes("?") ? page.split("?")[0] : page);
-    // throw error if not valid url
-    if (!isURL(page, {
-            require_protocol: true,
-            protocols: ['http', 'https'],
-            require_valid_protocol: true
-        })) {
-        res.status(400).send({error: "None shall pass - not a valid url"});
+    if (page) {
+        page = page.includes("?") ? page.split("?")[0] : page;
+        // throw error if page is not valid url
+        if (!isURL(page, {
+                require_protocol: true,
+                protocols: ['http', 'https'],
+                require_valid_protocol: true
+            })) {
+            res.status(400).send({error: "None shall pass - not a valid url"});
+            return;
+        }
+    }
+
+    // throw error if vote is not a boolean
+    // if (!isBoolean(String(vote))) {
+    if (![true, false].includes(vote)) {
+        res.status(400).send({error: "None shall pass - not a boolean"});
         return;
     }
 
