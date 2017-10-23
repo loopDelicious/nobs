@@ -59,7 +59,6 @@ class App extends Component {
         });
     };
 
-    // TODO: input validation (for all parameters submitted to server to be entered in db: not undefined on client and server sides)
     // TODO: rate limiting with Redis cache key is ip, TTL is value
     // TODO: clean up UI: display vote in pop-up, or add a dynamic meter as a visual indicator
 

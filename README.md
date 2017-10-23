@@ -11,3 +11,7 @@ Run server
 To access database, start Postgres and:
 
     $ psql nobs_db
+    
+Start Redis client
+
+    $ redis-server
