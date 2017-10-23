@@ -16,7 +16,8 @@ class App extends Component {
             'active': true,
             'lastFocusedWindow': true
         }, (tabs) => {
-            const url = tabs[0].url;
+            let url = tabs[0].url;
+            url = (url.includes("?") ? url.split("?")[0] : url);
             this.setState({
                 currentUrl: url
             });
@@ -33,7 +34,7 @@ class App extends Component {
 
     handleVote = (vote) => {
 
-        this.setState({ vote });
+        this.setState({vote});
 
         fetch('http://localhost:4800/votes', {
             method: 'post',
@@ -51,9 +52,11 @@ class App extends Component {
         });
     };
 
-    // TODO: handle diff URLs for same page, root domain instead of full root and path, canonical tags
+    // TODO: handle diff URLs for same page, discard query string (client and server side, also score by root domain, canonical tags
     // TODO: index on url lookup
     // TODO: input validation, no sql injection
+    // TODO: rate limiting
+    // TODO: clean up UI
 
     render() {
         return (

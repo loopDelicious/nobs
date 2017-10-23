@@ -94,6 +94,7 @@
 	                'lastFocusedWindow': true
 	            }, function (tabs) {
 	                var url = tabs[0].url;
+	                url = url.includes("?") ? url.split("?")[0] : url;
 	                _this.setState({
 	                    currentUrl: url
 	                });
@@ -131,9 +132,11 @@
 	        key: 'render',
 
 
-	        // TODO: handle diff URLs for same page, root domain instead of full root and path, canonical tags
+	        // TODO: handle diff URLs for same page, discard query string (client and server side, also score by root domain, canonical tags
 	        // TODO: index on url lookup
 	        // TODO: input validation, no sql injection
+	        // TODO: rate limiting
+	        // TODO: clean up UI
 
 	        value: function render() {
 	            return _react2.default.createElement(
