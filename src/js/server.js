@@ -9,6 +9,8 @@ const pg = require("pg-promise")(options);
 const connectionString = "postgres://localhost:5432/nobs_db";
 const db = pg(connectionString);
 
+const {isURL} = require('validator');
+
 const app = express();
 
 // allow CORS access
@@ -26,10 +28,14 @@ app.use(bodyParser.urlencoded({extended: false}));
 // create POSTGRES tables if none exists
 db.tx(function () {
     return this.batch([
+
+        // create a PAGES table
         this.none(`CREATE TABLE IF NOT EXISTS pages (
             page_id SERIAL PRIMARY KEY, 
             url TEXT UNIQUE
         )`),
+
+        // create a VOTES table
         this.none(`CREATE TABLE IF NOT EXISTS votes (
             ip_address INET not null, 
             page_id BIGINT not null REFERENCES pages ON DELETE CASCADE, 
@@ -46,28 +52,40 @@ db.tx(function () {
         console.log(error);
     });
 
-// GET to retrieve vote info from nobs db
+// GET to retrieve vote history from database
 app.get('/votes', function (req, res) {
 
     let page = req.query.url;
-    page = (page.includes("?") ? page.split("?")[0] : page);
 
+    // discard query string
+    page = (page.includes("?") ? page.split("?")[0] : page);
+    // throw error if not valid url
+    if (!isURL(page, {
+            require_protocol: true,
+            protocols: ['http', 'https'],
+            require_valid_protocol: true
+        })) {
+        res.status(400).send({error: "None shall pass - not a valid url"});
+        return;
+    }
+
+    // retrieve a count of true and false votes for the current page
     db.any(`SELECT vote, count(*)::INT FROM pages 
         LEFT JOIN votes ON votes.page_id = pages.page_id 
         WHERE url = $1 
         GROUP BY vote
         ORDER BY vote ASC;`, page)
         .then(function (countRetrieved) {
+
+            // count the true and false votes, if any
             console.log('DATA:', countRetrieved);
-            // first record of votes will be false
             let trueCount = countRetrieved[0] ? countRetrieved[0].count : 0;
             let falseCount = countRetrieved[1] ? countRetrieved[1].count : 0;
             let allCount = trueCount + falseCount;
+
+            // return the calculated score of truthfulness
             res.send({
                 success: true,
-                data: countRetrieved,
-                trues: trueCount,
-                falses: falseCount,
                 score: allCount ? trueCount / allCount : null
             });
         })
@@ -78,16 +96,29 @@ app.get('/votes', function (req, res) {
                 message: error
             });
         });
+
+
 });
 
 // POST to enter vote info into nobs db
-app.post('/votes', function (req, res) {
+app.post('/vote', function (req, res) {
 
     let page = req.body.url;
-    page = (page.includes("?") ? page.split("?")[0] : page);
     let vote = req.body.vote;
     // let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     let ip = req.ip;
+
+    // discard query string
+    page = (page.includes("?") ? page.split("?")[0] : page);
+    // throw error if not valid url
+    if (!isURL(page, {
+            require_protocol: true,
+            protocols: ['http', 'https'],
+            require_valid_protocol: true
+        })) {
+        res.status(400).send({error: "None shall pass - not a valid url"});
+        return;
+    }
 
     db.one(`INSERT INTO pages (url) 
         VALUES ($1) 

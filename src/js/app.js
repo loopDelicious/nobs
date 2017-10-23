@@ -1,5 +1,7 @@
 import ReactDOM from 'react-dom';
 import React, {Component} from 'react';
+const {isURL} = require('validator');
+
 
 class App extends Component {
 
@@ -11,24 +13,26 @@ class App extends Component {
 
     componentDidMount = () => {
 
-        //identify current page
+        // identify the current page
         chrome.tabs.query({
             'active': true,
             'lastFocusedWindow': true
         }, (tabs) => {
             let url = tabs[0].url;
             url = (url.includes("?") ? url.split("?")[0] : url);
-            this.setState({
-                currentUrl: url
-            });
-            // retrieve vote history from server
-            fetch('http://localhost:4800/votes?url=' + url).then((response) => {
-                return response.json();
-            }).then((obj) => {
+            if (isURL(url)) {
                 this.setState({
-                    voteHistory: (obj.score ? (obj.score * 100).toFixed(2) : null)
+                    currentUrl: url
                 });
-            })
+                // retrieve the vote history from server
+                fetch('http://localhost:4800/votes?url=' + url).then((response) => {
+                    return response.json();
+                }).then((obj) => {
+                    this.setState({
+                        voteHistory: (obj.score ? (obj.score * 100).toFixed(2) : null)
+                    });
+                })
+            }
         });
     };
 
@@ -36,7 +40,8 @@ class App extends Component {
 
         this.setState({vote});
 
-        fetch('http://localhost:4800/votes', {
+        // add or update vote for the current page
+        fetch('http://localhost:4800/vote', {
             method: 'post',
             headers: new Headers({
                 'Content-Type': 'application/json'
@@ -52,38 +57,48 @@ class App extends Component {
         });
     };
 
-    // TODO: handle diff URLs for same page, discard query string (client and server side, also score by root domain, canonical tags
-    // TODO: index on url lookup
-    // TODO: input validation, no sql injection
-    // TODO: rate limiting
-    // TODO: clean up UI
+    // TODO: input validation (for all parameters submitted to server to be entered in db: not undefined, boolean)
+    // TODO: rate limiting with Redis cache key is ip, TTL is value
+    // TODO: clean up UI: display vote in pop-up, or add a dynamic meter as a visual indicator
+
+    // TODO: v2: handle diff URLs for same page, also score by root domain, canonical tags
 
     render() {
+        console.log(this.state.currentUrl);
+        console.log(typeof(this.state.currentUrl));
         return (
             <div className="App">
-                <div className="intro">
-                    <div className="intro-icon">
-                        <div className="intro-icon">
-                            <i className="fa fa-tachometer fa-5x"/>
+                { !(this.state.currentUrl) ?
+                    <div className="not-url">
+                        <p> This is not a page you can vote on. </p>
+                    </div>
+                    :
+                    <div className="votable">
+                        <div className="intro">
+                            <div className="intro-icon">
+                                <div className="intro-icon">
+                                    <i className="fa fa-tachometer fa-5x"/>
+                                </div>
+                                <div className="intro-copy">
+                                    <h2>Is this page truthy or falsey?</h2>
+                                    <p className="urlName">{this.state.currentUrl}</p>
+                                    { this.state.voteHistory ?
+                                        <p>Truthiness: {this.state.voteHistory}%</p>
+                                        :
+                                        <p>This site doesn't have enough reports yet. Be one of the first!</p>
+                                    }
+                                </div>
+                            </div>
                         </div>
-                        <div className="intro-copy">
-                            <h2>Is this page truthy or falsey?</h2>
-                            <p className="urlName">{this.state.currentUrl}</p>
-                            { this.state.voteHistory ?
-                                <p>Truthiness: {this.state.voteHistory}%</p>
-                                :
-                                <p>This site doesn't have enough reports yet. Be one of the first!</p>
-                            }
+                        <div className="voting">
+                            <button className="voteArrows" onClick={this.handleVote.bind(this, true)}>
+                                Truthy &#x25B2;</button>
+                            <br />
+                            <button className="voteArrows" onClick={this.handleVote.bind(this, false)}>
+                                Falsey &#x25BC;</button>
                         </div>
                     </div>
-                </div>
-                <div className="voting">
-                    <button className="voteArrows" onClick={this.handleVote.bind(this, true)}>
-                        Truthy &#x25B2;</button>
-                    <br />
-                    <button className="voteArrows" onClick={this.handleVote.bind(this, false)}>
-                        Falsey &#x25BC;</button>
-                </div>
+                    }
             </div>
         );
     };

@@ -30,6 +30,10 @@ button {
     padding: 10px;
 }
 
+.not-url {
+    height: 100px;
+}
+
 .intro {
     height: 100px;
     color: var(--dark);
