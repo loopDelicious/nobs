@@ -169,7 +169,7 @@
 	                        { className: 'intro' },
 	                        _react2.default.createElement(
 	                            'div',
-	                            { className: 'intro-icon' },
+	                            { className: 'intro-display' },
 	                            _react2.default.createElement(
 	                                'div',
 	                                { className: 'intro-icon' },
@@ -177,7 +177,7 @@
 	                            ),
 	                            _react2.default.createElement(
 	                                'div',
-	                                { className: 'intro-copy' },
+	                                { className: 'intro-cta' },
 	                                _react2.default.createElement(
 	                                    'h2',
 	                                    null,

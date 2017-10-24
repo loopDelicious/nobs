@@ -16,7 +16,7 @@ client.on('error', function (err) {
     console.log("Error " + err);
 });
 
-const {isURL, isBoolean} = require('validator');
+const {isURL} = require('validator');
 
 const app = express();
 

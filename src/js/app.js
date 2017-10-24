@@ -76,11 +76,11 @@ class App extends Component {
                     :
                     <div className="votable">
                         <div className="intro">
-                            <div className="intro-icon">
+                            <div className="intro-display">
                                 <div className="intro-icon">
                                     <i className="fa fa-tachometer fa-5x"/>
                                 </div>
-                                <div className="intro-copy">
+                                <div className="intro-cta">
                                     <h2>Is this page truthy or falsey?</h2>
                                     <p className="urlName">{this.state.currentUrl}</p>
                                     { this.state.voteHistory ?

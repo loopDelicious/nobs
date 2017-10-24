@@ -22,16 +22,19 @@ body {
 .App {
     height: 200px;
     width: 400px;
-    padding: 22px;
 }
 
 button {
     border-radius: 4px;
     padding: 10px;
+    margin: 10px;
+    cursor: pointer;
 }
 
 .not-url {
-    height: 100px;
+    background-color: var(--dark);
+    color: var(--main-color);
+
 }
 
 .intro {
@@ -40,23 +43,30 @@ button {
 }
 
 .intro-icon {
-   float: left;
+    float: left;
+    margin: 10px;
 }
 
-.intro-copy {
-    float: right;
+.intro-cta {
+    float: left;
+    width: 70%;
+}
+
+.intro-cta p {
+    text-overflow: ellipsis;
     overflow: hidden;
+    white-space: nowrap;
 }
 
 .voting {
     width: 100%;
-    height: 100px;
+    height: 150px;
     background-color: var(--dark);
     color: var(--main-color);
 }
 
 .voteArrows {
-    cursor: pointer;
+var(--secondary-color);
 }
 
 
