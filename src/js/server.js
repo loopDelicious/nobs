@@ -103,8 +103,47 @@ app.get('/votes', function (req, res) {
                 message: error
             });
         });
+});
 
+// GET to retrieve previous vote from database
+app.get('/vote', function (req, res) {
 
+    let page = req.query.url;
+    let ip = req.ip;
+
+    // discard query string
+    page = (page.includes("?") ? page.split("?")[0] : page);
+    // throw error if not valid url
+    if (!isURL(page, {
+            require_protocol: true,
+            protocols: ['http', 'https'],
+            require_valid_protocol: true
+        })) {
+        res.status(400).send({error: "None shall pass - not a valid url"});
+        return;
+    }
+
+    // retrieve previous vote for the current page from the current ip
+    db.one(`SELECT vote FROM pages 
+        LEFT JOIN votes ON votes.page_id = pages.page_id 
+        WHERE url = $1 
+        AND ip_address = $2;`, [page, ip])
+        .then(function (voteRetrieved) {
+
+            console.log('DATA:', voteRetrieved);
+            // return the vote if found
+            res.send({
+                success: true,
+                vote: voteRetrieved ? voteRetrieved.vote : null
+            });
+        })
+        .catch(function (error) {
+            console.log('ERROR:', error);
+            res.status(400).send({
+                error: 'None shall pass - No vote retrieved',
+                message: error
+            });
+        });
 });
 
 function rateLimitCheck(ip, callback) {
@@ -115,7 +154,7 @@ function rateLimitCheck(ip, callback) {
         // if the ip exists in redis cache, increment the counter and check if rate limit is exceeded
         if (result) {
             client.incr(ip, function (err, reply) {
-                if (reply >= 10) {
+                if (reply >= 100) {  // TODO increase rate for dev, turn back down to 10
                     return ({error: "Too many requests"});
                 } else {
                     callback();
@@ -194,6 +233,7 @@ app.post('/vote', function (req, res) {
                 });
             });
     })
+    //    TODO: catch this error
     .catch(function (error) {
         console.log('ERROR:', error);
         res.status(429).send({

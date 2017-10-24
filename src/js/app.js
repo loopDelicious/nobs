@@ -8,7 +8,8 @@ class App extends Component {
     state = {
         currentUrl: null,
         voteHistory: null,
-        vote: null
+        vote: null,
+        previousVote: null
     };
 
     componentDidMount = () => {
@@ -26,12 +27,23 @@ class App extends Component {
                 this.setState({
                     currentUrl: url
                 });
+
                 // retrieve the vote history from server
                 fetch('http://localhost:4800/votes?url=' + url).then((response) => {
                     return response.json();
                 }).then((obj) => {
                     this.setState({
                         voteHistory: (obj.score ? (obj.score * 100).toFixed(2) : null)
+                    });
+                });
+
+                // retrieve the previous vote from server
+                fetch('http://localhost:4800/vote?url=' + url).then((response) => {
+                    return response.json();
+                }).then((obj2) => {
+                    console.log(obj2);
+                    this.setState({
+                        previousVote: (obj2 ? obj2.vote : null)
                     });
                 })
             }
@@ -59,14 +71,11 @@ class App extends Component {
         });
     };
 
-    // TODO: rate limiting with Redis cache key is ip, TTL is value
     // TODO: clean up UI: display vote in pop-up, or add a dynamic meter as a visual indicator
-
     // TODO: v2: handle diff URLs for same page, also score by root domain, canonical tags
 
     render() {
-        console.log(this.state.currentUrl);
-        console.log(typeof(this.state.currentUrl));
+
         return (
             <div className="App">
                 { !(this.state.currentUrl) ?
@@ -84,22 +93,30 @@ class App extends Component {
                                     <h2>Is this page truthy or falsey?</h2>
                                     <p className="urlName">{this.state.currentUrl}</p>
                                     { this.state.voteHistory ?
-                                        <p>Truthiness: {this.state.voteHistory}%</p>
+                                        <p className="truthy-level">Truthiness-level: {this.state.voteHistory}%</p>
                                         :
-                                        <p>This site doesn't have enough reports yet. Be one of the first!</p>
+                                        <p>Be one of the first to rate this site!</p>
                                     }
                                 </div>
                             </div>
                         </div>
                         <div className="voting">
                             <button className="voteArrows" onClick={this.handleVote.bind(this, true)}>
-                                Truthy &#x25B2;</button>
-                            <br />
+                                <span>Truthy </span>
+                                <i className="fa fa-thumbs-o-up"/>
+                            </button>
                             <button className="voteArrows" onClick={this.handleVote.bind(this, false)}>
-                                Falsey &#x25BC;</button>
+                                <span>Falsey </span>
+                                <i className="fa fa-thumbs-o-down"/>
+                            </button>
+                            { this.state.previousVote ?
+                                <p>Your previous vote: {this.state.previousVote ? "Truthy" : "Falsey"}</p>
+                                :
+                                <p>empty</p>
+                            }
                         </div>
                     </div>
-                    }
+                }
             </div>
         );
     };

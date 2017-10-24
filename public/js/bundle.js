@@ -50,8 +50,6 @@
 	    value: true
 	});
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _reactDom = __webpack_require__(1);
@@ -90,7 +88,8 @@
 	        return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = App.__proto__ || Object.getPrototypeOf(App)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
 	            currentUrl: null,
 	            voteHistory: null,
-	            vote: null
+	            vote: null,
+	            previousVote: null
 	        }, _this.componentDidMount = function () {
 
 	            // identify the current page
@@ -106,12 +105,23 @@
 	                    _this.setState({
 	                        currentUrl: url
 	                    });
+
 	                    // retrieve the vote history from server
 	                    fetch('http://localhost:4800/votes?url=' + url).then(function (response) {
 	                        return response.json();
 	                    }).then(function (obj) {
 	                        _this.setState({
 	                            voteHistory: obj.score ? (obj.score * 100).toFixed(2) : null
+	                        });
+	                    });
+
+	                    // retrieve the previous vote from server
+	                    fetch('http://localhost:4800/vote?url=' + url).then(function (response) {
+	                        return response.json();
+	                    }).then(function (obj2) {
+	                        console.log(obj2);
+	                        _this.setState({
+	                            previousVote: obj2 ? obj2.vote : null
 	                        });
 	                    });
 	                }
@@ -142,14 +152,11 @@
 	        key: 'render',
 
 
-	        // TODO: rate limiting with Redis cache key is ip, TTL is value
 	        // TODO: clean up UI: display vote in pop-up, or add a dynamic meter as a visual indicator
-
 	        // TODO: v2: handle diff URLs for same page, also score by root domain, canonical tags
 
 	        value: function render() {
-	            console.log(this.state.currentUrl);
-	            console.log(_typeof(this.state.currentUrl));
+
 	            return _react2.default.createElement(
 	                'div',
 	                { className: 'App' },
@@ -190,14 +197,14 @@
 	                                ),
 	                                this.state.voteHistory ? _react2.default.createElement(
 	                                    'p',
-	                                    null,
-	                                    'Truthiness: ',
+	                                    { className: 'truthy-level' },
+	                                    'Truthiness-level: ',
 	                                    this.state.voteHistory,
 	                                    '%'
 	                                ) : _react2.default.createElement(
 	                                    'p',
 	                                    null,
-	                                    'This site doesn\'t have enough reports yet. Be one of the first!'
+	                                    'Be one of the first to rate this site!'
 	                                )
 	                            )
 	                        )
@@ -208,13 +215,32 @@
 	                        _react2.default.createElement(
 	                            'button',
 	                            { className: 'voteArrows', onClick: this.handleVote.bind(this, true) },
-	                            'Truthy \u25B2'
+	                            _react2.default.createElement(
+	                                'span',
+	                                null,
+	                                'Truthy '
+	                            ),
+	                            _react2.default.createElement('i', { className: 'fa fa-thumbs-o-up' })
 	                        ),
-	                        _react2.default.createElement('br', null),
 	                        _react2.default.createElement(
 	                            'button',
 	                            { className: 'voteArrows', onClick: this.handleVote.bind(this, false) },
-	                            'Falsey \u25BC'
+	                            _react2.default.createElement(
+	                                'span',
+	                                null,
+	                                'Falsey '
+	                            ),
+	                            _react2.default.createElement('i', { className: 'fa fa-thumbs-o-down' })
+	                        ),
+	                        this.state.previousVote ? _react2.default.createElement(
+	                            'p',
+	                            null,
+	                            'Your previous vote: ',
+	                            this.state.previousVote ? "Truthy" : "Falsey"
+	                        ) : _react2.default.createElement(
+	                            'p',
+	                            null,
+	                            'empty'
 	                        )
 	                    )
 	                )
