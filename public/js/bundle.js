@@ -92,6 +92,8 @@
 	            previousVote: null
 	        }, _this.componentDidMount = function () {
 
+	            console.log(_this.state.previousVote);
+
 	            // identify the current page
 	            chrome.tabs.query({
 	                'active': true,
@@ -119,7 +121,6 @@
 	                    fetch('http://localhost:4800/vote?url=' + url).then(function (response) {
 	                        return response.json();
 	                    }).then(function (obj2) {
-	                        console.log(obj2);
 	                        _this.setState({
 	                            previousVote: obj2 ? obj2.vote : null
 	                        });
@@ -144,6 +145,9 @@
 	                return response.json();
 	            }).then(function (obj) {
 	                console.log(obj);
+	                _this.setState({
+	                    previousVote: obj ? obj.vote : null
+	                });
 	            });
 	        }, _temp), _possibleConstructorReturn(_this, _ret);
 	    }
@@ -232,7 +236,7 @@
 	                            ),
 	                            _react2.default.createElement('i', { className: 'fa fa-thumbs-o-down' })
 	                        ),
-	                        this.state.previousVote ? _react2.default.createElement(
+	                        this.state.previousVote !== null ? _react2.default.createElement(
 	                            'p',
 	                            null,
 	                            'Your previous vote: ',

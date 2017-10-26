@@ -14,6 +14,8 @@ class App extends Component {
 
     componentDidMount = () => {
 
+        console.log(this.state.previousVote);
+
         // identify the current page
         chrome.tabs.query({
             'active': true,
@@ -41,7 +43,6 @@ class App extends Component {
                 fetch('http://localhost:4800/vote?url=' + url).then((response) => {
                     return response.json();
                 }).then((obj2) => {
-                    console.log(obj2);
                     this.setState({
                         previousVote: (obj2 ? obj2.vote : null)
                     });
@@ -68,6 +69,9 @@ class App extends Component {
             return response.json();
         }).then((obj) => {
             console.log(obj);
+            this.setState({
+                previousVote: (obj ? obj.vote : null)
+            });
         });
     };
 
@@ -109,7 +113,7 @@ class App extends Component {
                                 <span>Falsey </span>
                                 <i className="fa fa-thumbs-o-down"/>
                             </button>
-                            { this.state.previousVote ?
+                            { this.state.previousVote !== null  ?
                                 <p>Your previous vote: {this.state.previousVote ? "Truthy" : "Falsey"}</p>
                                 :
                                 <p>empty</p>
