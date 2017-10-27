@@ -98,7 +98,7 @@ app.get('/votes', function (req, res) {
         })
         .catch(function (error) {
             console.log('ERROR:', error);
-            res.status(400).send({
+            res.status(404).send({
                 error: 'None shall pass - No votes counted',
                 message: error
             });
@@ -139,7 +139,7 @@ app.get('/vote', function (req, res) {
         })
         .catch(function (error) {
             console.log('ERROR:', error);
-            res.status(400).send({
+            res.status(404).send({
                 error: 'None shall pass - No vote retrieved',
                 message: error
             });
@@ -155,7 +155,7 @@ function rateLimitCheck(ip, callback) {
         if (result) {
             client.incr(ip, function (err, reply) {
                 if (reply >= 100) {  // TODO increase rate for dev, turn back down to 10
-                    return ({error: "Too many requests"});
+                    callback('Too many requests');
                 } else {
                     callback();
                 }
@@ -198,7 +198,16 @@ app.post('/vote', function (req, res) {
     }
 
     // check requests completed from this ip within the last 6 minutes before posting vote to database
-    rateLimitCheck(ip, function () {
+    rateLimitCheck(ip, function (err) {
+
+        if (err) {
+            console.log('ERROR:', err);
+            res.status(429).send({
+                error: 'None shall pass - rate limit exceeded',
+                message: err
+            });
+            return;
+        }
 
         db.one(`INSERT INTO pages (url) 
             VALUES ($1) 
@@ -209,7 +218,7 @@ app.post('/vote', function (req, res) {
                 db.one(`INSERT INTO votes (ip_address, page_id, vote) 
                     VALUES ($1, $2, $3) 
                     ON CONFLICT (ip_address, page_id) DO UPDATE SET vote=$3 
-                    RETURNING ip_address;`, [ip, pageResult.page_id, vote])
+                    RETURNING vote;`, [ip, pageResult.page_id, vote])
                     .then(function (voteResult) {
                         console.log('DATA:', voteResult);
                         res.send({
@@ -220,7 +229,7 @@ app.post('/vote', function (req, res) {
                     .catch(function (error) {
                         console.log('ERROR:', error);
                         res.status(400).send({
-                            error: 'None shall pass - INSERT into votes',
+                            error: 'None shall pass - did not INSERT into votes',
                             message: error
                         });
                     });
@@ -228,18 +237,10 @@ app.post('/vote', function (req, res) {
             .catch(function (error) {
                 console.log('ERROR:', error);
                 res.status(400).send({
-                    error: 'None shall pass - INSERT into pages',
+                    error: 'None shall pass - did not INSERT into pages',
                     message: error
                 });
             });
-    })
-    //    TODO: catch this error
-    .catch(function (error) {
-        console.log('ERROR:', error);
-        res.status(429).send({
-            error: 'None shall pass - rate limit exceeded',
-            message: error
-        });
     });
 });
 

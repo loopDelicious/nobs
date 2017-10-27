@@ -19,9 +19,7 @@ class App extends Component {
         // identify the current page
         chrome.tabs.query({
             'active': true,
-            'lastFocusedWindow': true
         }, (tabs) => {
-
             let url = tabs[0].url;
             url = (url.includes("?") ? url.split("?")[0] : url);
 
@@ -66,11 +64,12 @@ class App extends Component {
                 vote: vote
             })
         }).then((response) => {
+            console.log(response);
             return response.json();
         }).then((obj) => {
             console.log(obj);
             this.setState({
-                previousVote: (obj ? obj.vote : null)
+                previousVote: (obj ? obj.data.vote : null)
             });
         });
     };

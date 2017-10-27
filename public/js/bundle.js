@@ -96,10 +96,8 @@
 
 	            // identify the current page
 	            chrome.tabs.query({
-	                'active': true,
-	                'lastFocusedWindow': true
+	                'active': true
 	            }, function (tabs) {
-
 	                var url = tabs[0].url;
 	                url = url.includes("?") ? url.split("?")[0] : url;
 
@@ -142,11 +140,12 @@
 	                    vote: vote
 	                })
 	            }).then(function (response) {
+	                console.log(response);
 	                return response.json();
 	            }).then(function (obj) {
 	                console.log(obj);
 	                _this.setState({
-	                    previousVote: obj ? obj.vote : null
+	                    previousVote: obj ? obj.data.vote : null
 	                });
 	            });
 	        }, _temp), _possibleConstructorReturn(_this, _ret);
