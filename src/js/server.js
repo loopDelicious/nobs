@@ -86,9 +86,25 @@ app.get('/votes', function (req, res) {
 
             // count the true and false votes, if any
             console.log('DATA:', countRetrieved);
-            let trueCount = countRetrieved[0] ? countRetrieved[0].count : 0;
-            let falseCount = countRetrieved[1] ? countRetrieved[1].count : 0;
+            // [ anonymous { vote: false, count: 1 } ]
+            let trueCount = 0;
+            let falseCount = 0;
+
+            if (countRetrieved[0] && countRetrieved[0].vote === true) {
+                trueCount = countRetrieved[0].count;
+            } else if (countRetrieved[0] && countRetrieved[0].vote === false) {
+                falseCount = countRetrieved[0].count;
+            }
+            if (countRetrieved[1] && countRetrieved[1].vote === true) {
+                trueCount = countRetrieved[1].count;
+            } else if (countRetrieved[1] && countRetrieved[1].vote === false) {
+                falseCount = countRetrieved[1].count;
+            }
+            // let trueCount = countRetrieved[0] && countRetrieved[0].vote ? countRetrieved[0].count : 0;
+            // let falseCount = countRetrieved[1] ? countRetrieved[1].count : 0;
             let allCount = trueCount + falseCount;
+            console.log(allCount, trueCount, falseCount); // 1 1 0
+            console.log(trueCount / allCount);
 
             // return the calculated score of truthfulness
             res.send({

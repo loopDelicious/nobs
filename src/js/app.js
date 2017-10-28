@@ -14,9 +14,6 @@ class App extends Component {
 
     componentDidMount = () => {
 
-        console.log(this.state.previousVote);
-        console.log(this.state.voteHistory);
-
         // identify the current page
         chrome.tabs.query({
             'active': true,
@@ -34,9 +31,8 @@ class App extends Component {
                     return response.json();
                 }).then((obj) => {
                     this.setState({
-                        voteHistory: (obj.score ? (obj.score * 100).toFixed(2) : null)
+                        voteHistory: obj.score !== null ? (obj.score * 100).toFixed(2) : null
                     });
-                    console.log(this.state.voteHistory);
                 });
 
                 // retrieve the previous vote from server
@@ -78,8 +74,6 @@ class App extends Component {
         });
     };
 
-    // TODO: false votes are returned as 1 from server and therefore 100% truthy
-    // TODO: persist display in pop-up for first time votes
     // TODO: v2: handle diff URLs for same page, also score by root domain, canonical tags
 
     render() {

@@ -92,9 +92,6 @@
 	            previousVote: null
 	        }, _this.componentDidMount = function () {
 
-	            console.log(_this.state.previousVote);
-	            console.log(_this.state.voteHistory);
-
 	            // identify the current page
 	            chrome.tabs.query({
 	                'active': true
@@ -112,9 +109,8 @@
 	                        return response.json();
 	                    }).then(function (obj) {
 	                        _this.setState({
-	                            voteHistory: obj.score ? (obj.score * 100).toFixed(2) : null
+	                            voteHistory: obj.score !== null ? (obj.score * 100).toFixed(2) : null
 	                        });
-	                        console.log(_this.state.voteHistory);
 	                    });
 
 	                    // retrieve the previous vote from server
@@ -159,8 +155,6 @@
 	        key: 'render',
 
 
-	        // TODO: false votes are returned as 1 from server and therefore 100% truthy
-	        // TODO: persist display in pop-up for first time votes
 	        // TODO: v2: handle diff URLs for same page, also score by root domain, canonical tags
 
 	        value: function render() {
