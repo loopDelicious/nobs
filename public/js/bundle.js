@@ -93,6 +93,7 @@
 	        }, _this.componentDidMount = function () {
 
 	            console.log(_this.state.previousVote);
+	            console.log(_this.state.voteHistory);
 
 	            // identify the current page
 	            chrome.tabs.query({
@@ -113,14 +114,17 @@
 	                        _this.setState({
 	                            voteHistory: obj.score ? (obj.score * 100).toFixed(2) : null
 	                        });
+	                        console.log(_this.state.voteHistory);
 	                    });
 
 	                    // retrieve the previous vote from server
 	                    fetch('http://localhost:4800/vote?url=' + url).then(function (response) {
+	                        // console.log(response);
 	                        return response.json();
 	                    }).then(function (obj2) {
+	                        // console.log(obj2);
 	                        _this.setState({
-	                            previousVote: obj2 ? obj2.vote : null
+	                            previousVote: obj2.error ? null : obj2.vote
 	                        });
 	                    });
 	                }
@@ -155,7 +159,8 @@
 	        key: 'render',
 
 
-	        // TODO: clean up UI: display vote in pop-up, or add a dynamic meter as a visual indicator
+	        // TODO: false votes are returned as 1 from server and therefore 100% truthy
+	        // TODO: persist display in pop-up for first time votes
 	        // TODO: v2: handle diff URLs for same page, also score by root domain, canonical tags
 
 	        value: function render() {
@@ -179,32 +184,38 @@
 	                        { className: 'intro' },
 	                        _react2.default.createElement(
 	                            'div',
-	                            { className: 'intro-display' },
+	                            { className: 'intro-spacer' },
+	                            '\xA0'
+	                        ),
+	                        _react2.default.createElement(
+	                            'div',
+	                            { className: 'intro-cta' },
 	                            _react2.default.createElement(
-	                                'div',
-	                                { className: 'intro-icon' },
-	                                _react2.default.createElement('i', { className: 'fa fa-tachometer fa-5x' })
+	                                'h2',
+	                                null,
+	                                'Is this page truthy or falsey?'
 	                            ),
 	                            _react2.default.createElement(
+	                                'p',
+	                                { className: 'urlName' },
+	                                this.state.currentUrl
+	                            ),
+	                            this.state.voteHistory ? _react2.default.createElement(
 	                                'div',
-	                                { className: 'intro-cta' },
+	                                { className: 'previous-votes' },
+	                                this.state.voteHistory > .50 ? _react2.default.createElement('img', { className: 'speedometer', src: '/public/img/hi.png', alt: 'high-vote' }) : this.state.voteHistory > .20 ? _react2.default.createElement('img', { className: 'speedometer', src: '/public/img/med.png', alt: 'med-vote' }) : _react2.default.createElement('img', { className: 'speedometer', src: '/public/img/lo.png', alt: 'low-vote' }),
 	                                _react2.default.createElement(
-	                                    'h2',
-	                                    null,
-	                                    'Is this page truthy or falsey?'
-	                                ),
-	                                _react2.default.createElement(
-	                                    'p',
-	                                    { className: 'urlName' },
-	                                    this.state.currentUrl
-	                                ),
-	                                this.state.voteHistory ? _react2.default.createElement(
 	                                    'p',
 	                                    { className: 'truthy-level' },
 	                                    'Truthiness-level: ',
 	                                    this.state.voteHistory,
 	                                    '%'
-	                                ) : _react2.default.createElement(
+	                                )
+	                            ) : _react2.default.createElement(
+	                                'div',
+	                                { className: 'no-votes-yet' },
+	                                _react2.default.createElement('img', { className: 'speedometer', src: '/public/img/noVotes.png', alt: 'no-votes-yet' }),
+	                                _react2.default.createElement(
 	                                    'p',
 	                                    null,
 	                                    'Be one of the first to rate this site!'
@@ -217,7 +228,9 @@
 	                        { className: 'voting' },
 	                        _react2.default.createElement(
 	                            'button',
-	                            { className: 'voteArrows', onClick: this.handleVote.bind(this, true) },
+	                            {
+	                                className: 'voteArrows ' + (this.state.previousVote !== null ? this.state.previousVote ? 'vote-selected' : '' : ''),
+	                                onClick: this.handleVote.bind(this, true) },
 	                            _react2.default.createElement(
 	                                'span',
 	                                null,
@@ -227,23 +240,15 @@
 	                        ),
 	                        _react2.default.createElement(
 	                            'button',
-	                            { className: 'voteArrows', onClick: this.handleVote.bind(this, false) },
+	                            {
+	                                className: 'voteArrows ' + (this.state.previousVote !== null ? this.state.previousVote ? '' : 'vote-selected' : ''),
+	                                onClick: this.handleVote.bind(this, false) },
 	                            _react2.default.createElement(
 	                                'span',
 	                                null,
 	                                'Falsey '
 	                            ),
 	                            _react2.default.createElement('i', { className: 'fa fa-thumbs-o-down' })
-	                        ),
-	                        this.state.previousVote !== null ? _react2.default.createElement(
-	                            'p',
-	                            null,
-	                            'Your previous vote: ',
-	                            this.state.previousVote ? "Truthy" : "Falsey"
-	                        ) : _react2.default.createElement(
-	                            'p',
-	                            null,
-	                            'empty'
 	                        )
 	                    )
 	                )

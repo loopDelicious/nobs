@@ -15,6 +15,7 @@ class App extends Component {
     componentDidMount = () => {
 
         console.log(this.state.previousVote);
+        console.log(this.state.voteHistory);
 
         // identify the current page
         chrome.tabs.query({
@@ -35,14 +36,17 @@ class App extends Component {
                     this.setState({
                         voteHistory: (obj.score ? (obj.score * 100).toFixed(2) : null)
                     });
+                    console.log(this.state.voteHistory);
                 });
 
                 // retrieve the previous vote from server
                 fetch('http://localhost:4800/vote?url=' + url).then((response) => {
+                    // console.log(response);
                     return response.json();
                 }).then((obj2) => {
+                    // console.log(obj2);
                     this.setState({
-                        previousVote: (obj2 ? obj2.vote : null)
+                        previousVote: (obj2.error ? null : obj2.vote)
                     });
                 })
             }
@@ -74,7 +78,8 @@ class App extends Component {
         });
     };
 
-    // TODO: clean up UI: display vote in pop-up, or add a dynamic meter as a visual indicator
+    // TODO: false votes are returned as 1 from server and therefore 100% truthy
+    // TODO: persist display in pop-up for first time votes
     // TODO: v2: handle diff URLs for same page, also score by root domain, canonical tags
 
     render() {
@@ -88,35 +93,44 @@ class App extends Component {
                     :
                     <div className="votable">
                         <div className="intro">
-                            <div className="intro-display">
-                                <div className="intro-icon">
-                                    <i className="fa fa-tachometer fa-5x"/>
-                                </div>
-                                <div className="intro-cta">
-                                    <h2>Is this page truthy or falsey?</h2>
-                                    <p className="urlName">{this.state.currentUrl}</p>
-                                    { this.state.voteHistory ?
+                            <div className="intro-spacer">&nbsp;</div>
+                            <div className="intro-cta">
+                                <h2>Is this page truthy or falsey?</h2>
+                                <p className="urlName">{this.state.currentUrl}</p>
+                                { this.state.voteHistory ?
+                                    <div className="previous-votes">
+                                        { this.state.voteHistory > .50 ?
+                                            <img className="speedometer" src="/public/img/hi.png" alt="high-vote"/>
+                                            : (this.state.voteHistory > .20 ?
+                                                <img className="speedometer" src="/public/img/med.png" alt="med-vote"/>
+                                                :
+                                                <img className="speedometer" src="/public/img/lo.png" alt="low-vote"/>)
+                                        }
                                         <p className="truthy-level">Truthiness-level: {this.state.voteHistory}%</p>
-                                        :
+
+                                    </div>
+                                    :
+                                    <div className="no-votes-yet">
+                                        <img className="speedometer" src="/public/img/noVotes.png" alt="no-votes-yet"/>
                                         <p>Be one of the first to rate this site!</p>
-                                    }
-                                </div>
+                                    </div>
+
+                                }
                             </div>
                         </div>
                         <div className="voting">
-                            <button className="voteArrows" onClick={this.handleVote.bind(this, true)}>
+                            <button
+                                className={'voteArrows ' + (this.state.previousVote !== null ? (this.state.previousVote ? 'vote-selected' : '') : '')}
+                                onClick={this.handleVote.bind(this, true)}>
                                 <span>Truthy </span>
                                 <i className="fa fa-thumbs-o-up"/>
                             </button>
-                            <button className="voteArrows" onClick={this.handleVote.bind(this, false)}>
+                            <button
+                                className={'voteArrows ' + (this.state.previousVote !== null ? (this.state.previousVote ? '' : 'vote-selected') : '')}
+                                onClick={this.handleVote.bind(this, false)}>
                                 <span>Falsey </span>
                                 <i className="fa fa-thumbs-o-down"/>
                             </button>
-                            { this.state.previousVote !== null  ?
-                                <p>Your previous vote: {this.state.previousVote ? "Truthy" : "Falsey"}</p>
-                                :
-                                <p>empty</p>
-                            }
                         </div>
                     </div>
                 }

@@ -54,9 +54,10 @@ button:focus {
     color: var(--dark);
 }
 
-.intro-icon {
-    float: left;
+.intro-spacer {
+    width: 40px;
     margin: 10px;
+    float: left;
 }
 
 .intro-cta {
@@ -70,9 +71,33 @@ button:focus {
     white-space: nowrap;
 }
 
+.speedometer {
+    height: 40px;
+    float: left;
+    margin: 10px;
+}
+
 .truthy-level {
     font-weight: bolder;
     font-size: 14px;
+}
+
+.previous-votes {
+    display: table;
+}
+
+.previous-votes p {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.no-votes-yet {
+    display: table;
+}
+
+.no-votes-yet p {
+    display: table-cell;
+    vertical-align: middle;
 }
 
 .voting {
@@ -94,6 +119,10 @@ button:focus {
     font-size: 13px;
     font-weight: bold;
     color: var(--dark);
+}
+
+.vote-selected {
+    border: 2px solid var(--pop);
 }
 
 *:focus {

@@ -5,6 +5,9 @@
   "description": "Create and view annotations.",
   "icons": { "128": "icon_128.png" },
   "permissions": ["tabs", "<all_urls>"],
+  "web_accessible_resources": [
+    "./public/img/*.png"
+    ],
   "browser_action": {
     "default_title": "",
     "default_icon": "icon_128.png",
