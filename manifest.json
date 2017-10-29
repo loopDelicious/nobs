@@ -4,6 +4,7 @@
   "manifest_version": 2,
   "description": "Upvote and downvote pages according to truth levels.",
   "icons": { "128": "icon_128.png" },
+  "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
   "permissions": ["tabs", "<all_urls>"],
   "web_accessible_resources": [
     "./public/img/*.png"

@@ -17,3 +17,7 @@ Start Redis client
     $ redis-server
 
 ### Upload extension (.zip) file
+
+From parent directory:
+
+    $ zip -r truthometer.zip nobs2 --exclude=*.DS_Store* --exclude=*.git* --exclude=*node_modules* --exclude=*.idea*
