@@ -15,3 +15,5 @@ To access database, start Postgres and:
 Start Redis client
 
     $ redis-server
+
+### Upload extension (.zip) file

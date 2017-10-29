@@ -1,8 +1,8 @@
 {
-  "name": "No bs",
+  "name": "Truth-o-meter",
   "version": "1.0",
   "manifest_version": 2,
-  "description": "Create and view annotations.",
+  "description": "Upvote and downvote pages according to truth levels.",
   "icons": { "128": "icon_128.png" },
   "permissions": ["tabs", "<all_urls>"],
   "web_accessible_resources": [
